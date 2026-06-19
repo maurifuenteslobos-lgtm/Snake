@@ -100,6 +100,8 @@ while run:
         pygame.draw.rect(ventana, (verde), (x, y, anchocuadrado, altocuadrado))
     if serpiente[-1] == [coordX, coordY]:
         pygame.draw.rect(ventana, (verde_oscuro), (coordX, coordY, anchocuadrado, altocuadrado))
+    if serpiente [0][0] <= 0 or serpiente [0][0] >= limiteX or serpiente [0][1] <= 0 or serpiente [0][1] >= limite:
+        run = False
     pygame.draw.rect(ventana, (rojo), (coordsmanzanaX, coordsmanzanaY, anchomanzana, altomanzana))
     if coordsmanzanaX < coordX + anchocuadrado and coordsmanzanaX + anchomanzana > coordX and coordsmanzanaY < coordY + altocuadrado and coordsmanzanaY + altomanzana > coordY:
         puntaje += 1
