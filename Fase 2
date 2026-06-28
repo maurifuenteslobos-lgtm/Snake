@@ -1,0 +1,166 @@
+import pygame
+import random
+import time
+
+pygame.init()
+
+def reiniciar():
+    global puntaje, serpiente, coordX, coordY, direccion
+    global tiempo_inicio, coordsmanzanaX, coordsmanzanaY, game_over
+
+    puntaje = 0
+    serpiente = [[620, 340]]
+    coordX = 620
+    coordY = 340
+    direccion = "derecha"
+    tiempo_inicio = time.time()
+    coordsmanzanaX = random.randrange(0, 64) * 20
+    coordsmanzanaY = random.randrange (0, 36) * 20
+    game_over = False
+
+serpiente = [[620,340]]
+
+puntaje = 0
+
+fuente = pygame.font.SysFont("Arial", 20)
+
+tiempo = 0
+tiempo_inicio = time.time()
+
+clock = pygame.time.Clock()
+
+cabeza = serpiente[0]
+
+verde_oscuro = (0, 100, 0)
+rojo = (255, 0, 0)
+azul = (0, 0, 255)
+verde = (0, 255, 0)
+negro = (0, 0, 0)
+blanco = (255, 255, 255)
+
+anchoventana = 1280
+altoventana = 720
+
+anchomanzana = 20
+altomanzana = 20
+coordsmanzanaX = random.randrange(0, 64) * 20
+coordsmanzanaY = random.randrange(0, 36) * 20
+
+direccion = "derecha"
+
+anchocuadrado = 20
+altocuadrado = 20
+coordX = 620
+coordY = 340
+
+velocidad = 20
+aceleracion = 2
+
+limiteX = anchoventana - anchocuadrado
+limiteY = altoventana - altocuadrado
+
+ventana = pygame.display.set_mode((anchoventana, altoventana))
+titulo = "Snake"
+pygame.display.set_caption(titulo)
+
+
+
+game_over = False
+run = True
+while run:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT and direccion != "izquierda":
+             direccion = "derecha"
+            elif event.key == pygame.K_LEFT and direccion != "derecha":
+                direccion = "izquierda"
+            elif event.key == pygame.K_UP and direccion != "abajo":
+                direccion = "arriba"
+            elif event.key == pygame.K_DOWN and direccion != "arriba":
+                direccion = "abajo"
+            if game_over:
+                if event.key == pygame.K_r:
+                    reiniciar()
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+
+    
+    if not game_over:
+        if direccion == "derecha":
+            coordX += velocidad
+        elif direccion == "izquierda":
+            coordX -= velocidad
+    
+        elif direccion == "arriba":
+            coordY -= velocidad
+        elif direccion == "abajo":
+            coordY += velocidad
+
+        clock.tick(10)
+
+
+        if coordX < 0:
+            coordX = 0
+        if coordX > limiteX:
+            coordX = limiteX
+        if coordY < 0:
+            coordY = 0
+        if coordY > limiteY:
+            coordY = limiteY
+    
+        serpiente.append([coordX, coordY])
+        if len(serpiente) > puntaje + 1:
+            del serpiente[0]
+    
+        if [coordX, coordY] in serpiente[:-1]:
+            game_over = True
+    
+        ventana.fill((azul))
+    
+        for x, y in serpiente:
+            pygame.draw.rect(ventana, (verde), (x, y, anchocuadrado, altocuadrado))
+        
+        if serpiente[-1] == [coordX, coordY]:
+            pygame.draw.rect(ventana, (verde_oscuro), (coordX, coordY, anchocuadrado, altocuadrado))
+       
+        if serpiente [0][0] <= 0 or serpiente [0][0] >= limiteX or serpiente [0][1] <= 0 or serpiente [0][1] >= limiteY:
+            game_over = True
+            
+        if not serpiente == [coordsmanzanaX, coordsmanzanaY]:
+            pygame.draw.rect(ventana, (rojo), (coordsmanzanaX, coordsmanzanaY, anchomanzana, altomanzana))
+        if coordsmanzanaX < coordX + anchocuadrado and coordsmanzanaX + anchomanzana > coordX and coordsmanzanaY < coordY + altocuadrado and coordsmanzanaY + altomanzana > coordY:
+            puntaje += 1
+            coordsmanzanaX = random.randrange(0, 64) * 20
+            coordsmanzanaY = random.randrange(0, 36) * 20
+
+
+
+        puntaje_final = fuente.render("Puntaje: " + str(puntaje), True, blanco)
+        tiempo_final = fuente.render("Tiempo: " + str(int(tiempo)) + "s", True, blanco)
+   
+        tiempo = time.time() - tiempo_inicio
+    
+    
+        ventana.blit(puntaje_final, (10, 10))
+        ventana.blit(tiempo_final, (600, 10))
+
+
+    else:
+        ventana.fill((negro))
+        puntaje_gameover = fuente.render("Puntaje: " + str(puntaje), True, blanco)
+        tiempo_gameover = fuente.render("Tiempo: " + str(int(tiempo)) + "s", True, blanco)
+        texto_gameover = fuente.render("GAME OVER", True, blanco)
+        reinicio = fuente.render("Presiona R para reiniciar o ESC para salir", True, blanco)
+        ventana.blit(puntaje_gameover, (360, 380))
+        ventana.blit(tiempo_gameover, (360, 360))
+        ventana.blit(texto_gameover, (550, 300))
+        ventana.blit(reinicio, (450, 680))
+
+
+
+
+
+    pygame.display.update()
+pygame.quit()
